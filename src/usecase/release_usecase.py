@@ -1,6 +1,8 @@
-from output_data.reservation_output_data import ReservationOutputData
-from presenter.reservation_presenter import AbstractReservationPresenter
-from input_data.reservation_input_data import ReservationInputData
+from entity.params.dynamo_db_get_items_params import DynamoDbGetItemsForSpecificReleaseDateParams
+from output_data.release_output_data import ReleaseOutputData
+from presenter.release_presenter import AbstractReleasePresenter
+from input_data.release_input_data import ReleaseInputData
+from output_data.release_output_data import ReleaseOutputData
 from entity.params.dynamo_db_update_tweet_id_params import DynamoDbUpdateTweetIdParams
 from entity.params.twitter_tweet_params import TweetParams
 from entity.params.dynamo_db_update_article_url_params import DynamoDbUpdateArticleUrlParams
@@ -16,11 +18,13 @@ from repository.dmm_repository import AbstractDmmRepository
 from injector import inject
 from abc import ABCMeta, abstractmethod
 from typing import cast, List
+import json
+from dataclasses import asdict
 
 
-class ReservationUseCase(metaclass=ABCMeta):
+class ReleaseUseCase(metaclass=ABCMeta):
     @inject
-    def __init__(self, dmm_repository: AbstractDmmRepository, dynamo_db_repository: AbstractDynamoDbRepository, wordpress_repository: AbstractWordPressRepository, twitter_repository: AbstractTwitterRepository, presenter: AbstractReservationPresenter):
+    def __init__(self, dmm_repository: AbstractDmmRepository, dynamo_db_repository: AbstractDynamoDbRepository, wordpress_repository: AbstractWordPressRepository, twitter_repository: AbstractTwitterRepository, presenter: AbstractReleasePresenter):
         self.dmm_repository = dmm_repository
         self.dynamo_db_repository = dynamo_db_repository
         self.wordpress_repository = wordpress_repository
@@ -28,18 +32,18 @@ class ReservationUseCase(metaclass=ABCMeta):
         self.presenter = presenter
 
     @abstractmethod
-    def handle(self, input_data: ReservationInputData) -> None:
+    def handle(self, input_data: ReleaseInputData) -> None:
         pass
 
 
-class ReservationInteractor(ReservationUseCase):
-    def handle(self, input_data: ReservationInputData) -> None:
-        posted_data: List[ReservationOutputData.PostedData] = []
+class ReleaseInteractor(ReleaseUseCase):
+    def handle(self, input_data: ReleaseInputData) -> None:
+        posted_data: List[ReleaseOutputData.PostedData] = []
 
         # DMM APIから商品取得
         if isinstance(items := self.dmm_repository.get_items(
-            GetDmmItemsParams.create_get_reservation_item_params(
-                datetime_now=input_data.datetime_now
+            GetDmmItemsParams.create_get_release_item_params(
+                input_data.datetime_now
             )
         ), Failure):
             self.presenter.output_error(items)
@@ -55,7 +59,7 @@ class ReservationInteractor(ReservationUseCase):
             self.presenter.output_error(stored_item_ids)
             return None
 
-       # DBに保存できたcontent_idから、Itemを取得
+        # DBに保存できたcontent_idから、Itemを取得
         stored_items = list(
             filter(
                 lambda item: item.content_id in cast(
@@ -95,18 +99,25 @@ class ReservationInteractor(ReservationUseCase):
                 self.presenter.output_error(result_article_url)
                 continue
 
+        # 本日配信開始アイテムを取得 from DynamoDB
+        if isinstance(items_released_today := self.dynamo_db_repository.get_items_for_specific_release_date(
+            DynamoDbGetItemsForSpecificReleaseDateParams.create_get_items_params(
+                input_data.datetime_now
+            )
+        ), Failure):
+            self.presenter.output_error(items_released_today)
+            return None
+
+        for item in items_released_today:
             # ツイート
             if isinstance(tweet_id := self.twitter_repository.tweet(
-                TweetParams.create_reservation_tweet_params(
-                    item,
-                    article_url
-                )
+                TweetParams.create_release_tweet_params(item)
             ), Failure):
                 self.presenter.output_error(tweet_id)
                 continue
 
             # ツイートのIDをDBに保存
-            if isinstance(result_update_tweet_id := self.dynamo_db_repository.update_tweet_id_as_reservation(
+            if isinstance(result_update_tweet_id := self.dynamo_db_repository.update_tweet_id_as_release(
                 DynamoDbUpdateTweetIdParams.create_update_tweet_id_params(
                     item, tweet_id)
             ), Failure):
@@ -114,18 +125,17 @@ class ReservationInteractor(ReservationUseCase):
                 continue
 
             posted_data.append(
-                ReservationOutputData.PostedData(
+                ReleaseOutputData.PostedData(
                     item,
-                    media_id,
-                    article_url,
                     tweet_id
                 )
             )
 
         return self.presenter.output(
-            ReservationOutputData(
-                items,
-                stored_items,
-                posted_data
+            ReleaseOutputData(
+                items_from_dmm_api=items,
+                items_stored_dynamo_db=stored_items,
+                items_from_dynamo_db=items_released_today,
+                posted_data=posted_data
             )
         )

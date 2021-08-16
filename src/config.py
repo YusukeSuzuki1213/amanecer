@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-DYNAMO_DB_TABLE_NAME = 'debut-items'
+DYNAMO_DB_TABLE_NAME = 'items-3006'
 DMM_GET_ITEMS_URL = 'https://api.dmm.com/affiliate/v3/ItemList'
 AWS_REGIN_NAME = 'us-east-2'
 WP_RESOURCE_NAME_POST = '/wp-json/wp/v2/posts'

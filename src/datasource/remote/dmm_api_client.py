@@ -21,6 +21,7 @@ class DmmApiClient(object):
                 'sort': params.sort,
                 'article': params.article,
                 'article_id': params.article_id,
+                'gte_date': params.gte_date,
                 'lte_date': params.lte_date,
                 'output': params.output,
             },

@@ -27,7 +27,7 @@ class GetItemsSuccessMapper(object):
                 ),
                 image_url=item['imageURL']['large'],
                 video_url=cls.__get_video_url(item['content_id']),
-                release_date=item['date'].replace(' ', 'T'),
+                release_date=item['date'].split(' ')[0]
             ), items)
         )
 

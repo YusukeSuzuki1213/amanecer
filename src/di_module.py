@@ -1,3 +1,5 @@
+from usecase.release_usecase import ReleaseInteractor, ReleaseUseCase
+from presenter.release_presenter import AbstractReleasePresenter, ConsoleReleasePresenter
 from presenter.reservation_presenter import AbstractReservationPresenter, ConsoleReservationPresenter
 from usecase.reservation_usecase import ReservationInteractor, ReservationUseCase
 from injector import Module, Binder
@@ -42,3 +44,6 @@ class DIModule(Module):
         binder.bind(ReservationUseCase, to=ReservationInteractor)
         binder.bind(AbstractReservationPresenter,
                     to=ConsoleReservationPresenter)
+        binder.bind(ReleaseUseCase, to=ReleaseInteractor)
+        binder.bind(AbstractReleasePresenter,
+                    to=ConsoleReleasePresenter)

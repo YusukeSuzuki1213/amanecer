@@ -3,5 +3,5 @@ from datetime import datetime
 
 
 @dataclass
-class ReservationInputData:
+class ReleaseInputData:
     datetime_now: datetime

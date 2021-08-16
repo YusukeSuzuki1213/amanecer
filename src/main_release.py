@@ -7,6 +7,6 @@ if __name__ == "__main__":
     injector = Injector([DIModule])
     controller = injector.get(Controller)
 
-    controller.tweet_reservation_items(
+    controller.tweet_release_items(
         datetime_now=datetime.now()
     )

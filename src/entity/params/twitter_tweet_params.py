@@ -22,6 +22,14 @@ class TweetParams:
         )
 
     @classmethod
+    def create_release_tweet_params(cls, item: Item) -> 'TweetParams':
+        return TweetParams(
+            'テスト {}'.format(
+                item.article_url
+            )
+        )
+
+    @classmethod
     def __get_first_sentence(cls) -> str:
         return (random.choice(
             [
