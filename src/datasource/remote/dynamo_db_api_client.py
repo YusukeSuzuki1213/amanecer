@@ -5,6 +5,8 @@ from typing import Dict, Any
 from entity.params.dynamo_db_update_article_url_params import DynamoDbUpdateArticleUrlParams
 from boto3.dynamodb.conditions import Attr, Key
 
+# TODO: 日付はDate型を使うように
+
 
 class DynamoDbApiClient():
     def __init__(self, aws_access_key_id: str, aws_secret_access_key: str, regin_name: str, table_name: str) -> None:
