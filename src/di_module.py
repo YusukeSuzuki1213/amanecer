@@ -1,3 +1,5 @@
+from presenter.popular_presenter import AbstractPopularPresenter, ConsolePopularPresenter
+from usecase.popular_usecase import PopularInteractor, PopularUseCase
 from usecase.release_usecase import ReleaseInteractor, ReleaseUseCase
 from presenter.release_presenter import AbstractReleasePresenter, ConsoleReleasePresenter
 from presenter.reservation_presenter import AbstractReservationPresenter, ConsoleReservationPresenter
@@ -45,5 +47,6 @@ class DIModule(Module):
         binder.bind(AbstractReservationPresenter,
                     to=ConsoleReservationPresenter)
         binder.bind(ReleaseUseCase, to=ReleaseInteractor)
-        binder.bind(AbstractReleasePresenter,
-                    to=ConsoleReleasePresenter)
+        binder.bind(AbstractReleasePresenter, to=ConsoleReleasePresenter)
+        binder.bind(PopularUseCase, to=PopularInteractor)
+        binder.bind(AbstractPopularPresenter, to=ConsolePopularPresenter)

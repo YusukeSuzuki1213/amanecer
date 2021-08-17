@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+# TODO: ファイル名がクラス名に揃える
+
 
 @dataclass
 class DynamoDbGetItemsForSpecificReleaseDateParams:

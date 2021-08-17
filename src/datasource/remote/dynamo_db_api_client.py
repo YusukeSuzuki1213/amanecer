@@ -74,3 +74,23 @@ class DynamoDbApiClient():
             },
             UpdateExpression="set #tweet_id_as_release=:tweet_id_as_release",
         )
+
+    def get_popular_item(self) -> Dict[str, Any]:
+        return self.table.scan(
+            FilterExpression=Attr('tweet_id_as_popular').not_exists() & Attr(
+                'article_url').exists()
+        )
+
+    def update_tweet_id_as_popular(self, params: DynamoDbUpdateTweetIdParams) -> None:
+        self.table.update_item(
+            Key={
+                'content_id': params.content_id,
+            },
+            ExpressionAttributeNames={
+                '#tweet_id_as_popular': 'tweet_id_as_popular'
+            },
+            ExpressionAttributeValues={
+                ':tweet_id_as_popular': params.tweet_id
+            },
+            UpdateExpression="set #tweet_id_as_popular=:tweet_id_as_popular",
+        )

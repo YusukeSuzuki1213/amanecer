@@ -30,6 +30,14 @@ class TweetParams:
         )
 
     @classmethod
+    def create_popular_tweet_params(cls, item: Item) -> 'TweetParams':
+        return TweetParams(
+            'ほげ {}'.format(
+                item.article_url
+            )
+        )
+
+    @classmethod
     def __get_first_sentence(cls) -> str:
         return (random.choice(
             [

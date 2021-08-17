@@ -26,7 +26,7 @@ class GetDmmItemsParams:
             site='FANZA',
             service='digital',
             floor='videoa',
-            hits='3',
+            hits='20',
             sort='date',
             article='genre',
             article_id='3006',
@@ -48,6 +48,22 @@ class GetDmmItemsParams:
             article_id='3006',
             gte_date=datetime_now.strftime('%Y-%m-%dT00:00:00'),
             lte_date=datetime_now.strftime('%Y-%m-%dT23:59:59'),
+            mono_stock='',
+            output='json'
+        )
+
+    @classmethod
+    def create_get_popular_item_params(cls) -> 'GetDmmItemsParams':
+        return GetDmmItemsParams(
+            site='FANZA',
+            service='digital',
+            floor='videoa',
+            hits='20',
+            sort='rank',
+            article='genre',
+            article_id='3006',
+            gte_date='',
+            lte_date='',
             mono_stock='',
             output='json'
         )

@@ -1,7 +1,4 @@
-from entity.params.dynamo_db_get_items_params import DynamoDbGetItemsForSpecificReleaseDateParams
-from output_data.release_output_data import ReleaseOutputData
-from presenter.release_presenter import AbstractReleasePresenter
-from input_data.release_input_data import ReleaseInputData
+from output_data.popular_output_data import PopularOutputData
 from entity.params.dynamo_db_update_tweet_id_params import DynamoDbUpdateTweetIdParams
 from entity.params.twitter_tweet_params import TweetParams
 from entity.params.dynamo_db_update_article_url_params import DynamoDbUpdateArticleUrlParams
@@ -17,11 +14,13 @@ from repository.dmm_repository import AbstractDmmRepository
 from injector import inject
 from abc import ABCMeta, abstractmethod
 from typing import cast, List
+from input_data.popular_input_data import PopularInputData
+from presenter.popular_presenter import AbstractPopularPresenter
 
 
-class ReleaseUseCase(metaclass=ABCMeta):
+class PopularUseCase(metaclass=ABCMeta):
     @inject
-    def __init__(self, dmm_repository: AbstractDmmRepository, dynamo_db_repository: AbstractDynamoDbRepository, wordpress_repository: AbstractWordPressRepository, twitter_repository: AbstractTwitterRepository, presenter: AbstractReleasePresenter):
+    def __init__(self, dmm_repository: AbstractDmmRepository, dynamo_db_repository: AbstractDynamoDbRepository, wordpress_repository: AbstractWordPressRepository, twitter_repository: AbstractTwitterRepository, presenter: AbstractPopularPresenter):
         self.dmm_repository = dmm_repository
         self.dynamo_db_repository = dynamo_db_repository
         self.wordpress_repository = wordpress_repository
@@ -29,22 +28,18 @@ class ReleaseUseCase(metaclass=ABCMeta):
         self.presenter = presenter
 
     @abstractmethod
-    def handle(self, input_data: ReleaseInputData) -> None:
+    def handle(self, input_data: PopularInputData) -> None:
         pass
 
 
-class ReleaseInteractor(ReleaseUseCase):
-    def handle(self, input_data: ReleaseInputData) -> None:
-        posted_data: List[ReleaseOutputData.PostedData] = []
+class PopularInteractor(PopularUseCase):
+    def handle(self, input_data: PopularInputData) -> None:
 
         # DMM APIから商品取得
         if isinstance(items := self.dmm_repository.get_items(
-            GetDmmItemsParams.create_get_release_item_params(
-                input_data.datetime_now
-            )
+            GetDmmItemsParams.create_get_popular_item_params()
         ), Failure):
-            self.presenter.output_error(items)
-            return None
+            return self.presenter.output_error(items)
 
         # 取得した商品をDBに登録(DBにまだ保存されていないものだけ)
         if isinstance(stored_item_ids := self.dynamo_db_repository.add_all(
@@ -53,8 +48,7 @@ class ReleaseInteractor(ReleaseUseCase):
                 datetime_now=input_data.datetime_now
             )
         ), Failure):
-            self.presenter.output_error(stored_item_ids)
-            return None
+            return self.presenter.output_error(stored_item_ids)
 
         # DBに保存できたcontent_idから、Itemを取得
         stored_items = list(
@@ -96,43 +90,37 @@ class ReleaseInteractor(ReleaseUseCase):
                 self.presenter.output_error(result_article_url)
                 continue
 
-        # 本日配信開始アイテムを取得 from DynamoDB
-        if isinstance(items_released_today := self.dynamo_db_repository.get_items_for_specific_release_date(
-            DynamoDbGetItemsForSpecificReleaseDateParams.create_get_items_params(
-                input_data.datetime_now
-            )
+        # 人気アイテムを取得 from DynamoDB
+        if isinstance(popular_item := self.dynamo_db_repository.get_popular_item(), Failure):
+            return self.presenter.output_error(popular_item)
+
+        # DBに人気アイテムがなかったら
+        if popular_item is None:
+            return self.presenter.output(PopularOutputData(
+                items,
+                stored_items,
+                None,
+                None
+            ))
+
+        # ツイート
+        if isinstance(tweet_id := self.twitter_repository.tweet(
+            TweetParams.create_popular_tweet_params(popular_item)
         ), Failure):
-            self.presenter.output_error(items_released_today)
-            return None
+            return self.presenter.output_error(tweet_id)
 
-        for item in items_released_today:
-            # ツイート
-            if isinstance(tweet_id := self.twitter_repository.tweet(
-                TweetParams.create_release_tweet_params(item)
-            ), Failure):
-                self.presenter.output_error(tweet_id)
-                continue
-
-            # ツイートのIDをDBに保存
-            if isinstance(result_update_tweet_id := self.dynamo_db_repository.update_tweet_id_as_release(
-                DynamoDbUpdateTweetIdParams.create_update_tweet_id_params(
-                    item, tweet_id)
-            ), Failure):
-                self.presenter.output_error(result_update_tweet_id)
-                continue
-
-            posted_data.append(
-                ReleaseOutputData.PostedData(
-                    item,
-                    tweet_id
-                )
-            )
+        # ツイートのIDをDBに保存
+        if isinstance(result_update_tweet_id := self.dynamo_db_repository.update_tweet_id_as_popular(
+            DynamoDbUpdateTweetIdParams.create_update_tweet_id_params(
+                popular_item, tweet_id)
+        ), Failure):
+            return self.presenter.output_error(result_update_tweet_id)
 
         return self.presenter.output(
-            ReleaseOutputData(
-                items_from_dmm_api=items,
-                items_stored_dynamo_db=stored_items,
-                items_from_dynamo_db=items_released_today,
-                posted_data=posted_data
+            PopularOutputData(
+                items,
+                stored_items,
+                popular_item,
+                tweet_id
             )
         )

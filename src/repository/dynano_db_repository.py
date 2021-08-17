@@ -34,6 +34,14 @@ class AbstractDynamoDbRepository(metaclass=ABCMeta):
     def update_tweet_id_as_release(self, params: DynamoDbUpdateTweetIdParams) -> Union[None, Failure]:
         pass
 
+    @abstractmethod
+    def get_popular_item(self) -> Union[Union[Item, None], Failure]:
+        pass
+
+    @abstractmethod
+    def update_tweet_id_as_popular(self, params: DynamoDbUpdateTweetIdParams) -> Union[None, Failure]:
+        pass
+
 
 class DynamoDbRepository(AbstractDynamoDbRepository):
     def __init__(self, dynamo_db_api_client: DynamoDbApiClient) -> None:
@@ -73,12 +81,25 @@ class DynamoDbRepository(AbstractDynamoDbRepository):
         try:
             response = self.dynamo_db_api_client.get_items_for_specific_release_date(
                 params)
-            return GetDynamoDbItemsSuccessMapper.to_entity(response)
+            return GetDynamoDbItemsSuccessMapper.to_entity_list(response)
         except Exception:
             return Failure('DynamoDbから取得中にエラー', format_exc())
 
     def update_tweet_id_as_release(self, params: DynamoDbUpdateTweetIdParams) -> Union[None, Failure]:
         try:
             self.dynamo_db_api_client.update_tweet_id_as_release(params)
+        except Exception:
+            return Failure('DynamoDbにtweetのid保存中にエラー', format_exc())
+
+    def get_popular_item(self) -> Union[Union[Item, None], Failure]:
+        try:
+            response = self.dynamo_db_api_client.get_popular_item()
+            return GetDynamoDbItemsSuccessMapper.to_entity(response)
+        except Exception:
+            return Failure('DynamoDBから取得中にエラー')
+
+    def update_tweet_id_as_popular(self, params: DynamoDbUpdateTweetIdParams) -> Union[None, Failure]:
+        try:
+            self.dynamo_db_api_client.update_tweet_id_as_popular(params)
         except Exception:
             return Failure('DynamoDbにtweetのid保存中にエラー', format_exc())
