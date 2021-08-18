@@ -58,7 +58,7 @@ class GetDmmItemsParams:
             site='FANZA',
             service='digital',
             floor='videoa',
-            hits='30',
+            hits='100',
             sort='rank',
             article='genre',
             article_id='3006',
