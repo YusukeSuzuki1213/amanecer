@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from entity.article_content import ArticleContent
 from entity.item import Item
 from typing import List
 from config import WP_RESOURCE_NAME_POST, WP_COTEGORY_ID
@@ -18,10 +19,8 @@ class PostArticleToWpParams:
     @classmethod
     def create_post_article_params(cls, item: Item, media_id: int) -> 'PostArticleToWpParams':
         return PostArticleToWpParams(
-            title='{}'.format(item.title),
-            content='{}{}{}'.format(
-                item.image_url, item.video_url, item.affiliate_url
-            ),
+            title=ArticleContent.get_article_title(item.title),
+            content=ArticleContent.get_article_content(item),
             slug=item.content_id,
             tag_ids=[],  # タグは一旦なし
             featured_media_id=media_id,

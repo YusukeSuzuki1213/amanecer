@@ -72,3 +72,20 @@ if not WP_APP_PASS:
 if not WP_BASE_URL:
     print('Specify WP_BASE_URL as environment variable.')
     os.sys.exit(1)
+
+# DMM CRAWLER
+DMM_CRAWLER_VIDEO_SERCH_URL = os.getenv('DMM_CRAWLER_VIDEO_SERCH_URL', '')
+DMM_CRAWLER_URL = os.getenv('DMM_CRAWLER_URL', '')
+DMM_CRAWLER_VIDEO_URL = os.getenv('DMM_CRAWLER_VIDEO_URL', '')
+
+if not DMM_CRAWLER_VIDEO_SERCH_URL:
+    print('Specify DMM_CRAWLER_VIDEO_SERCH_URL as environment variable.')
+    os.sys.exit(1)
+
+if not DMM_CRAWLER_URL:
+    print('Specify DMM_CRAWLER_URL as environment variable.')
+    os.sys.exit(1)
+
+if not DMM_CRAWLER_VIDEO_URL:
+    print('Specify DMM_CRAWLER_VIDEO_URL as environment variable.')
+    os.sys.exit(1)
