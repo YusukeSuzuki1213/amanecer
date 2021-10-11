@@ -24,3 +24,9 @@ class TweetParams:
         return TweetParams(
             TweetContent.get_popular_tweet_content(item)
         )
+
+    @classmethod
+    def create_limited_time_sale_tweet_params(cls, item: Item) -> 'TweetParams':
+        return TweetParams(
+            TweetContent.get_limited_time_sale_tweet_content(item)
+        )

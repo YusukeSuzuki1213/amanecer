@@ -1,4 +1,5 @@
 from presenter.popular_presenter import AbstractPopularPresenter, ConsolePopularPresenter
+from usecase.limited_time_sale_usecase import LimitedTimeSaleInteractor, LimitedTimeSaleUseCase
 from usecase.popular_usecase import PopularInteractor, PopularUseCase
 from usecase.release_usecase import ReleaseInteractor, ReleaseUseCase
 from presenter.release_presenter import AbstractReleasePresenter, ConsoleReleasePresenter
@@ -50,3 +51,4 @@ class DIModule(Module):
         binder.bind(AbstractReleasePresenter, to=ConsoleReleasePresenter)
         binder.bind(PopularUseCase, to=PopularInteractor)
         binder.bind(AbstractPopularPresenter, to=ConsolePopularPresenter)
+        binder.bind(LimitedTimeSaleUseCase, to=LimitedTimeSaleInteractor)

@@ -67,3 +67,19 @@ class GetDmmItemsParams:
             mono_stock='',
             output='json'
         )
+
+    @classmethod
+    def create_get_limited_time_sale_item_params(cls) -> 'GetDmmItemsParams':
+        return GetDmmItemsParams(
+            site='FANZA',
+            service='digital',
+            floor='videoa',
+            hits='15',
+            sort='rank',
+            article='genre',
+            article_id='6565',
+            gte_date='',
+            lte_date='',
+            mono_stock='',
+            output='json'
+        )
