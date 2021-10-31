@@ -19,7 +19,8 @@ class GetDynamoDbItemsSuccessMapper(object):
                     image_url=item['image_url'],
                     video_url=item['video_url'],
                     release_date=item['release_date'],
-                    article_url=item['article_url']
+                    article_url=item['article_url'],
+                    min_price=item['min_price'],
                 ), response['Items']
             )
         )
@@ -43,5 +44,6 @@ class GetDynamoDbItemsSuccessMapper(object):
             image_url=item[0]['image_url'],
             video_url=item[0]['video_url'],
             release_date=item[0]['release_date'],
-            article_url=item[0]['article_url']
+            article_url=item[0]['article_url'],
+            min_price=item[0]['min_price'],
         )

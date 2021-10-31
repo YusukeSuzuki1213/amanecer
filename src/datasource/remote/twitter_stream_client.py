@@ -2,6 +2,7 @@ import tweepy
 from typing import Any, Callable, List
 from tweepy.auth import OAuthHandler
 from abc import ABCMeta, abstractmethod
+from log import SlackClient
 
 
 class TwitterStreamClient:
@@ -34,10 +35,13 @@ class TwitterStreamListener(AbstractTwitterStreamListener):
         self._callback = callback
 
     def on_status(self, status: Any):
-        self._callback(status)
+        self._callback(status._json)
 
     # TODO: エラー時の処理
     def on_error(self, status_code: int):
+        SlackClient().send_alert(
+            "streamlistener on_error status_code: {}".format(status_code)
+        )
         if status_code == 420:
             print("Error")
         return False

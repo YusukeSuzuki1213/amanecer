@@ -16,6 +16,7 @@ class DynamoDbAddAllParams:
     release_date: str
     created_at: str
     updated_at: str
+    min_price: str
 
     @dataclass
     class Genre:
@@ -39,6 +40,7 @@ class DynamoDbAddAllParams:
                 release_date=item.release_date,
                 created_at=datetime_now.replace(microsecond=0).isoformat(),
                 updated_at=datetime_now.replace(microsecond=0).isoformat(),
+                min_price=item.min_price,
             ), list(
                 filter(lambda item: item.video_url, items)
             ))

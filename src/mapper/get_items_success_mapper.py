@@ -30,7 +30,8 @@ class GetItemsSuccessMapper(object):
                 ),
                 image_url=item['imageURL']['large'],
                 video_url=cls.__get_video_url(item['content_id']),
-                release_date=item['date'].split(' ')[0]
+                release_date=item['date'].split(' ')[0],
+                min_price='¥{}'.format(item['prices']['price']),
             ), items)
         )
 

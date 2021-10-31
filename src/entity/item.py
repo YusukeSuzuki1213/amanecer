@@ -12,7 +12,8 @@ class Item:
     image_url: str
     video_url: str
     release_date: str
-    article_url: str = ''
+    min_price: str
+    article_url: str = ''  # TODO: ここに入れるべきではない.別のmodelで
 
     @dataclass
     class Genre:

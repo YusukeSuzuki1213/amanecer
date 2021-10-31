@@ -10,6 +10,7 @@ class GetDmmItemsParams:
     floor: str
     hits: str
     sort: str
+    cid: str
     article: str
     article_id: str
     gte_date: str
@@ -28,6 +29,7 @@ class GetDmmItemsParams:
             floor='videoa',
             hits='15',
             sort='date',
+            cid='',
             article='genre',
             article_id='3006',
             gte_date=datetime_now.replace(microsecond=0).isoformat(),
@@ -44,6 +46,7 @@ class GetDmmItemsParams:
             floor='videoa',
             hits='10',
             sort='date',
+            cid='',
             article='genre',
             article_id='3006',
             gte_date=datetime_now.strftime('%Y-%m-%dT00:00:00'),
@@ -60,6 +63,7 @@ class GetDmmItemsParams:
             floor='videoa',
             hits='100',
             sort='rank',
+            cid='',
             article='genre',
             article_id='3006',
             gte_date='',
@@ -76,8 +80,26 @@ class GetDmmItemsParams:
             floor='videoa',
             hits='15',
             sort='rank',
+            cid='',
             article='genre',
             article_id='6565',
+            gte_date='',
+            lte_date='',
+            mono_stock='',
+            output='json'
+        )
+
+    @classmethod
+    def create_get_item_by_cid_params(cls, cid: str) -> 'GetDmmItemsParams':
+        return GetDmmItemsParams(
+            site='FANZA',
+            service='digital',
+            floor='videoa',
+            hits='',
+            sort='',
+            cid=cid,
+            article='',
+            article_id='',
             gte_date='',
             lte_date='',
             mono_stock='',

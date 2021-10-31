@@ -96,3 +96,16 @@ if not DMM_CRAWLER_URL:
 if not DMM_CRAWLER_VIDEO_URL:
     print('Specify DMM_CRAWLER_VIDEO_URL as environment variable.')
     os.sys.exit(1)
+
+# SLACK
+SLACK_API_TOKEN = os.getenv('SLACK_API_TOKEN', '')
+SLACK_CHANNEL_NAME_FOR_SEND_LOG = os.getenv(
+    'SLACK_CHANNEL_NAME_FOR_SEND_LOG', ''
+)
+if not SLACK_API_TOKEN:
+    print('Specify SLACK_API_TOKEN as environment variable.')
+    os.sys.exit(1)
+
+if not SLACK_CHANNEL_NAME_FOR_SEND_LOG:
+    print('Specify SLACK_CHANNEL_NAME_FOR_SEND_LOG as environment variable.')
+    os.sys.exit(1)

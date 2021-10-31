@@ -11,6 +11,8 @@ class DmmApiClient(object):
 
     def get_items(self, params: GetDmmItemsParams) -> Dict[str, Any]:
         return self._request(
+            # TODO: paramsクラスを直でasdictできるように。
+            # paramsを追加したのにここの実装を忘れることがあるため
             params={
                 'api_id': params.api_id,
                 'affiliate_id': params.affiliate_id,
@@ -19,6 +21,7 @@ class DmmApiClient(object):
                 'floor': params.floor,
                 'hits': params.hits,
                 'sort': params.sort,
+                'cid': params.cid,
                 'article': params.article,
                 'article_id': params.article_id,
                 'gte_date': params.gte_date,
