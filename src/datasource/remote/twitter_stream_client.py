@@ -23,6 +23,10 @@ class TwitterStreamClient:
         self._stream.listener.set_callback(callback)
         self._stream.filter(follow=self._stream_filter_follow, is_async=True)
 
+    def samurai_listen(self, callback: Callable[[Any], None]) -> None:
+        self._stream.listener.set_callback(callback)
+        self._stream.filter(track=[''], is_async=True)
+
 
 class AbstractTwitterStreamListener(tweepy.StreamListener, metaclass=ABCMeta):
     @abstractmethod

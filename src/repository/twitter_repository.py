@@ -9,6 +9,7 @@ from datasource.remote.twitter_stream_client import TwitterStreamClient
 from entity.params.twitter_reply_params import ReplyParams
 from mapper.get_twitter_reply_success_mapper import GetTwitterReplySuccessMapper
 from log import SlackClient
+from entity.samurai_recommend_content import SamuraiRecommendContent
 
 
 class AbstractTwitterRepository(metaclass=ABCMeta):
@@ -23,6 +24,10 @@ class AbstractTwitterRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def start_stream(self, callback: Callable[[RepliedContent], None]) -> None:
+        pass
+
+    @abstractmethod
+    def start_samurai_stream(self, callback: Callable[[SamuraiRecommendContent], None]) -> None:
         pass
 
 
@@ -54,8 +59,18 @@ class TwitterRepository(AbstractTwitterRepository):
             )
         )
 
+    def start_samurai_stream(self, callback: Callable[[SamuraiRecommendContent], None]) -> None:
+        return self.stream_client.samurai_listen(
+            callback=lambda response_json: self.__execute_samurai_callback(
+                response_json, callback
+            )
+        )
+
     def __execute_callback(self, response_json: Any, callback: Callable[[RepliedContent], None]) -> None:
         reply = GetTwitterReplySuccessMapper.to_entity(response_json)
 
         if(reply is not None):
             callback(reply)
+
+    def __execute_samurai_callback(self, response_json: Any, callback: Callable[[SamuraiRecommendContent], None]) -> None:
+        print(response_json)

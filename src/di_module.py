@@ -11,6 +11,7 @@ from datasource.remote.wordpress_api_client import WordPressApiClient
 from datasource.remote.twitter_api_client import TwitterApiClient
 from injector import Module, Binder
 from datasource.remote.twitter_stream_client import TwitterStreamListener
+from usecase.samurai_recommend_usecase import SamuraiRecommendInteractor, SamuraiRecommendUseCase
 from usecase.reservation_usecase import ReservationInteractor, ReservationUseCase
 from presenter.reservation_presenter import AbstractReservationPresenter, ConsoleReservationPresenter
 from presenter.release_presenter import AbstractReleasePresenter, ConsoleReleasePresenter
@@ -68,3 +69,4 @@ class DIModule(Module):
         binder.bind(AbstractPopularPresenter, to=ConsolePopularPresenter)
         binder.bind(LimitedTimeSaleUseCase, to=LimitedTimeSaleInteractor)
         binder.bind(SameReplyUseCase, to=SameReplyInteractor)
+        binder.bind(SamuraiRecommendUseCase, to=SamuraiRecommendInteractor)
