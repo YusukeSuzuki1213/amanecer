@@ -15,6 +15,8 @@ TWITTER_CONSUMER_TOKEN = os.getenv('TWITTER_CONSUMER_TOKEN', '')
 TWITTER_CONSUMER_SECRET = os.getenv('TWITTER_CONSUMER_SECRET', '')
 TWITTER_ACCESS_TOKEN = os.getenv('TWITTER_ACCESS_TOKEN', '')
 TWITTER_ACCESS_SECRET = os.getenv('TWITTER_ACCESS_SECRET', '')
+TWITTER_SAMURAI_HASH_TAG = os.getenv('TWITTER_SAMURAI_HASH_TAG', '')
+
 TWITTER_STREAM_FILTER_FOLLOW = (
     os.getenv('TWITTER_STREAM_FILTER_FOLLOW', '')).split(',')
 
@@ -37,6 +39,10 @@ if not TWITTER_ACCESS_SECRET:
 # TODO: .envに定義されているかのチェック and '123,232'の形式になっているかのチェックを実装
 if not TWITTER_STREAM_FILTER_FOLLOW:
     print('Specify TWITTER_STREAM_FILTER_FOLLOW as environment variable.')
+    os.sys.exit(1)
+
+if not TWITTER_SAMURAI_HASH_TAG:
+    print('Specify TWITTER_SAMURAI_HASH_TAG as environment variable.')
     os.sys.exit(1)
 
 # DMM

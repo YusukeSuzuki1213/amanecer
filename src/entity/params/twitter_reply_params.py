@@ -3,6 +3,7 @@ from typing import List
 from entity.tweet_content import TweetContent
 from entity.item import Item
 from entity.replied_content import RepliedContent
+from entity.samurai_recommend_content import SamuraiRecommendContent
 
 
 @dataclass
@@ -18,6 +19,16 @@ class ReplyParams:
                 TweetContent.get_reply_message_content(item)
             ),
             in_reply_to_status_id=replied_content.in_reply_to_status_id
+        )
+
+    @classmethod
+    def create_samurai_recommend_reply_params(cls, item: Item, content: SamuraiRecommendContent) -> 'ReplyParams':
+        return ReplyParams(
+            message='{}{}'.format(
+                cls.__create_mentioons([content.screen_name]),
+                TweetContent.get_samurai_reply_message_content(item, content)
+            ),
+            in_reply_to_status_id=content.in_reply_to_status_id
         )
 
     @classmethod

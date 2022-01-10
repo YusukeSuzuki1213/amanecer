@@ -10,6 +10,7 @@ from entity.params.twitter_reply_params import ReplyParams
 from mapper.get_twitter_reply_success_mapper import GetTwitterReplySuccessMapper
 from log import SlackClient
 from entity.samurai_recommend_content import SamuraiRecommendContent
+from mapper.get_samurai_recommend_success_mapper import GetSamuraiRecommendSuccessMapper
 
 
 class AbstractTwitterRepository(metaclass=ABCMeta):
@@ -73,4 +74,5 @@ class TwitterRepository(AbstractTwitterRepository):
             callback(reply)
 
     def __execute_samurai_callback(self, response_json: Any, callback: Callable[[SamuraiRecommendContent], None]) -> None:
-        print(response_json)
+        content = GetSamuraiRecommendSuccessMapper.to_entity(response_json)
+        callback(content)

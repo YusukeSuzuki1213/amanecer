@@ -21,6 +21,7 @@ class DmmApiClient(object):
                 'floor': params.floor,
                 'hits': params.hits,
                 'sort': params.sort,
+                'keyword': params.keyword,
                 'cid': params.cid,
                 'article': params.article,
                 'article_id': params.article_id,

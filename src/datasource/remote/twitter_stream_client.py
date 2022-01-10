@@ -3,6 +3,7 @@ from typing import Any, Callable, List
 from tweepy.auth import OAuthHandler
 from abc import ABCMeta, abstractmethod
 from log import SlackClient
+from config import TWITTER_SAMURAI_HASH_TAG
 
 
 class TwitterStreamClient:
@@ -25,7 +26,7 @@ class TwitterStreamClient:
 
     def samurai_listen(self, callback: Callable[[Any], None]) -> None:
         self._stream.listener.set_callback(callback)
-        self._stream.filter(track=[''], is_async=True)
+        self._stream.filter(track=[TWITTER_SAMURAI_HASH_TAG], is_async=True)
 
 
 class AbstractTwitterStreamListener(tweepy.StreamListener, metaclass=ABCMeta):
