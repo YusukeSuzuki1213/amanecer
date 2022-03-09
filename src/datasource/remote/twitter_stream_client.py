@@ -20,6 +20,7 @@ class TwitterStreamClient:
         auth.set_access_token(access_token, access_secret)
         return auth
 
+    # TODO: listenは統一できそう。track, followはcall時のパラメータとする
     def listen(self, callback: Callable[[Any], None]) -> None:
         self._stream.listener.set_callback(callback)
         self._stream.filter(follow=self._stream_filter_follow, is_async=True)
@@ -27,6 +28,10 @@ class TwitterStreamClient:
     def samurai_listen(self, callback: Callable[[Any], None]) -> None:
         self._stream.listener.set_callback(callback)
         self._stream.filter(track=[TWITTER_SAMURAI_HASH_TAG], is_async=True)
+
+    def reply_to_actress_listen(self, follow_list: List[str], callback: Callable[[Any], None]) -> None:
+        self._stream.listener.set_callback(callback)
+        self._stream.filter(follow=follow_list, is_async=True)
 
 
 class AbstractTwitterStreamListener(tweepy.StreamListener, metaclass=ABCMeta):

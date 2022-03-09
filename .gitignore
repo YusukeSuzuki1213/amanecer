@@ -3,4 +3,5 @@ src/__init__.py
 **/__pycache__/
 src/entity/tweet_content.py
 src/entity/article_content.py
+src/entity/reply_to_actress_follow_list.py
 src/mapper/get_samurai_recommend_success_mapper.py

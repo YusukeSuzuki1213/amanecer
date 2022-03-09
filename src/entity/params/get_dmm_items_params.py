@@ -165,3 +165,21 @@ class GetDmmItemsParams:
             mono_stock='',
             output='json'
         )
+
+    @classmethod
+    def create_get_items_by_actress_id_params(cls, actress_id: int, hits: int = 15) -> 'GetDmmItemsParams':
+        return GetDmmItemsParams(
+            site='FANZA',
+            service='digital',
+            floor='videoa',
+            hits=str(hits),
+            sort='rank',
+            keyword='',
+            cid='',
+            article='actress',
+            article_id=str(actress_id),
+            gte_date='',
+            lte_date='',
+            mono_stock='',
+            output='json'
+        )

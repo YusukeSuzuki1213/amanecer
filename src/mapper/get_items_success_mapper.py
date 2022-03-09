@@ -12,7 +12,6 @@ class GetItemsSuccessMapper(object):
     @classmethod
     def to_entity(cls, response: Dict[str, Any]) -> List[Item]:
         items = response['result']['items']
-
         return list(
             map(lambda item: Item(
                 content_id=item['content_id'],

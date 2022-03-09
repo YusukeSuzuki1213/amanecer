@@ -60,6 +60,7 @@ if not DMM_AFFILIATE_ID:
 # AWS
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', '')
+AWS_QUEUE_URL = os.getenv('AWS_QUEUE_URL', '')
 
 if not AWS_ACCESS_KEY_ID:
     print('Specify AWS_ACCESS_KEY_ID as environment variable.')
@@ -67,6 +68,10 @@ if not AWS_ACCESS_KEY_ID:
 
 if not AWS_SECRET_KEY:
     print('Specify AWS_SECRET_KEY as environment variable.')
+    os.sys.exit(1)
+
+if not AWS_QUEUE_URL:
+    print('Specify AWS_QUEUE_URL as environment variable.')
     os.sys.exit(1)
 
 # WordPress
