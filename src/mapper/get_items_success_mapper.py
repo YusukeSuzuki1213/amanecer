@@ -1,11 +1,13 @@
 import requests
 import re
-from entity.item import Item
-from typing import Any, Dict, List
+import datetime
+from entity.item import Item, Genre, Campaign
+from typing import Any, Dict, List, Optional
 from bs4 import BeautifulSoup
 from config import (
     DMM_CRAWLER_VIDEO_SERCH_URL, DMM_CRAWLER_URL, DMM_CRAWLER_VIDEO_URL
 )
+from log import SlackClient
 
 
 class GetItemsSuccessMapper(object):
@@ -22,7 +24,7 @@ class GetItemsSuccessMapper(object):
                         item['iteminfo']['actress'] if 'actress' in item['iteminfo'] else [])
                 ),
                 genres=list(
-                    map(lambda genre: Item.Genre(
+                    map(lambda genre: Genre(
                         id=genre['id'],
                         name=genre['name']
                     ), item['iteminfo']['genre'] if 'genre' in item['iteminfo'] else [])
@@ -31,8 +33,37 @@ class GetItemsSuccessMapper(object):
                 video_url=cls.__get_video_url(item['content_id']),
                 release_date=item['date'].split(' ')[0],
                 min_price='¥{}'.format(item['prices']['price']),
+                campaign=cls.__get_campaign(item),
             ), items)
         )
+
+    @classmethod
+    def __get_campaign(cls, item: Any) -> List['Campaign']:
+        if 'campaign' not in item:
+            return []
+
+        try:
+            dt_now = datetime.datetime.now()
+            return list(
+                filter(
+                    lambda campaign: campaign.date_begin_datetime() < dt_now and dt_now < campaign.date_end_datetime() and (
+                        "セール" in campaign.title or "OFF" in campaign.title),
+                    map(
+                        lambda campaign: Campaign(
+                            title=campaign['title'],
+                            date_begin=campaign['date_begin'],
+                            date_end=campaign['date_end'],
+                        ),
+                        item['campaign']
+                    )
+                )
+            )
+        except Exception as e:
+            SlackClient().send_alert(
+                "Error at campaign response parse: {}\n{}".format(
+                    item['campaign'], e)
+            )
+            return []
 
     @classmethod
     def __get_video_url(cls, content_id: str) -> str:

@@ -1,4 +1,4 @@
-from entity.item import Item
+from entity.item import Item, Genre
 from typing import Any, Dict, List, Union
 
 
@@ -13,7 +13,7 @@ class GetDynamoDbItemsSuccessMapper(object):
                     affiliate_url=item['affiliate_url'],
                     actresses=item['actresses'],
                     genres=list(
-                        map(lambda genre: Item.Genre(
+                        map(lambda genre: Genre(
                             int(genre['id']), genre['name']), item['genres'])
                     ),
                     image_url=item['image_url'],
@@ -38,7 +38,7 @@ class GetDynamoDbItemsSuccessMapper(object):
             affiliate_url=item[0]['affiliate_url'],
             actresses=item[0]['actresses'],
             genres=list(
-                map(lambda genre: Item.Genre(
+                map(lambda genre: Genre(
                     int(genre['id']), genre['name']), item[0]['genres'])
             ),
             image_url=item[0]['image_url'],

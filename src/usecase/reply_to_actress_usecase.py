@@ -1,4 +1,5 @@
-import random
+import datetime
+from typing import List
 from injector import inject
 from repository.twitter_repository import AbstractTwitterRepository
 from repository.dmm_repository import AbstractDmmRepository
@@ -12,6 +13,7 @@ from entity.reply_to_actress_follow_list import get_follow_list
 from dataclasses import asdict
 import boto3
 import json
+from entity.item import Item
 from config import AWS_ACCESS_KEY_ID, AWS_REGIN_NAME, AWS_SECRET_KEY, AWS_QUEUE_URL
 
 
@@ -47,7 +49,7 @@ class ReplyToActressInteractor(ReplyToActressUseCase):
             items := self.dmm_repository.get_items(
                 GetDmmItemsParams.create_get_items_by_actress_id_params(
                     actress_id=actress_id,
-                    hits=10,
+                    hits=15,
                 )
             ),
             Failure
@@ -59,7 +61,8 @@ class ReplyToActressInteractor(ReplyToActressUseCase):
             SlackClient().send_alert("actress_idをもとにitemが取得できませんでした.actress_idが間違っているかもしれません")
             return None
 
-        item = random.choice(items)
+        item, message = self._get_item(items)
+        print(item, message)
 
         # TODO: MQにリクエストはrepositoryを作成するべき
         self.session = boto3.Session(
@@ -76,11 +79,26 @@ class ReplyToActressInteractor(ReplyToActressUseCase):
                 {
                     "tweet_id": content.tweet_id,
                     "screen_name": content.screen_name,
-                    "item": asdict(item)
+                    "item": asdict(item),
+                    "message": message,
                 },
                 ensure_ascii=False,
             ),
             MessageGroupId="REPLY",
         )
 
-        print(response)
+    def _get_item(self, items: List['Item']) -> tuple['Item', str]:
+        # TODO: tupleで返すのどうにかしたい。campaignは"”で返してるのびみょい
+        for item in items:
+            if item.campaign != []:
+                return (item, "")
+
+            if list(
+                filter(
+                    lambda genre: genre.id == 6565,
+                    item.genres
+                )
+            ) != []:
+                return (item, "期間限定セール中")
+
+        return (items[0], "大人気作品")
