@@ -1,4 +1,5 @@
 import datetime
+import random
 from typing import List
 from injector import inject
 from repository.twitter_repository import AbstractTwitterRepository
@@ -49,13 +50,15 @@ class ReplyToActressInteractor(ReplyToActressUseCase):
             items := self.dmm_repository.get_items(
                 GetDmmItemsParams.create_get_items_by_actress_id_params(
                     actress_id=actress_id,
-                    hits=15,
+                    hits=20,
                 )
             ),
             Failure
         ):
             items.print_failure()
             return None
+
+        items = self._filter_items(items)
 
         if len(items) == 0:
             SlackClient().send_alert("actress_idをもとにitemが取得できませんでした.actress_idが間違っているかもしれません")
@@ -87,11 +90,23 @@ class ReplyToActressInteractor(ReplyToActressUseCase):
             MessageGroupId="REPLY",
         )
 
+    # actressは単体
+    def _filter_items(self, items: List['Item']) -> List['Item']:
+        return list(
+            filter(
+                lambda item: len(item.actresses) == 1,
+                items,
+            )
+        )
+
     def _get_item(self, items: List['Item']) -> tuple['Item', str]:
+        campaign_result: List[tuple['Item', str]] = []
+        limited_time_sale_result: List[tuple['Item', str]] = []
+
         # TODO: tupleで返すのどうにかしたい。campaignは"”で返してるのびみょい
         for item in items:
             if item.campaign != []:
-                return (item, "")
+                campaign_result.append((item, ""))
 
             if list(
                 filter(
@@ -99,6 +114,11 @@ class ReplyToActressInteractor(ReplyToActressUseCase):
                     item.genres
                 )
             ) != []:
-                return (item, "期間限定セール中")
+                limited_time_sale_result.append((item, "期間限定セール中"))
 
-        return (items[0], "大人気作品")
+        if(len(campaign_result) > 0):
+            return random.choice(campaign_result)
+        elif(len(limited_time_sale_result) > 0):
+            return random.choice(limited_time_sale_result)
+        else:
+            return (random.choice(items[:3]), "大人気作品")
