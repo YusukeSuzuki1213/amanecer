@@ -39,7 +39,8 @@ class TwitterStreamClient:
         while True:
             try:
                 self._stream.filter(follow=follow_list, is_async=True)
-            except Exception:
+            except Exception as e:
+                print(e)
                 continue
 
 
@@ -51,7 +52,6 @@ class AbstractTwitterStreamListener(tweepy.StreamListener, metaclass=ABCMeta):
 
 class TwitterStreamListener(AbstractTwitterStreamListener):
     def set_callback(self, callback: Callable[[Any], None]) -> None:
-        print("callback")
         self._callback = callback
 
     def on_status(self, status: Any):
