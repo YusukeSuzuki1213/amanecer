@@ -27,13 +27,8 @@ class TwitterStreamClient:
 
     def samurai_listen(self, callback: Callable[[Any], None]) -> None:
         self._stream.listener.set_callback(callback)
-        while True:
-            try:
-                self._stream.filter(
-                    track=[TWITTER_SAMURAI_HASH_TAG], is_async=True)
-            except Exception as e:
-                print(e)
-                continue
+        self._stream.filter(
+            track=[TWITTER_SAMURAI_HASH_TAG], is_async=True)
 
     def reply_to_actress_listen(self, follow_list: List[str], callback: Callable[[Any], None]) -> None:
         self._stream.listener.set_callback(callback)
