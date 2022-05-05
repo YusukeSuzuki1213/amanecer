@@ -31,7 +31,8 @@ class TwitterStreamClient:
             try:
                 self._stream.filter(
                     track=[TWITTER_SAMURAI_HASH_TAG], is_async=True)
-            except Exception:
+            except Exception as e:
+                print(e)
                 continue
 
     def reply_to_actress_listen(self, follow_list: List[str], callback: Callable[[Any], None]) -> None:
