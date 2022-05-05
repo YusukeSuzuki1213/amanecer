@@ -51,10 +51,10 @@ class AbstractTwitterStreamListener(tweepy.StreamListener, metaclass=ABCMeta):
 
 class TwitterStreamListener(AbstractTwitterStreamListener):
     def set_callback(self, callback: Callable[[Any], None]) -> None:
+        print("callback")
         self._callback = callback
 
     def on_status(self, status: Any):
-        print("received")
         self._callback(status._json)
 
     # TODO: エラー時の処理
