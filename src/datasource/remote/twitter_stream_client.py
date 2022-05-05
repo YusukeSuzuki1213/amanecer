@@ -54,6 +54,7 @@ class TwitterStreamListener(AbstractTwitterStreamListener):
         self._callback = callback
 
     def on_status(self, status: Any):
+        print("received")
         self._callback(status._json)
 
     # TODO: エラー時の処理
