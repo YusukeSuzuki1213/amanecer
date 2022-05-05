@@ -42,6 +42,7 @@ class ReplyToActressInteractor(ReplyToActressUseCase):
         return None
 
     def _after_received(self, content: ReplyToActressContent) -> None:
+        print(content)
         actress_id = get_dmm_id_by_twitter_id(
             twitter_id=content.user_id
         )
